@@ -12,11 +12,18 @@ def cosine_similarity(vector_a: np.array, vector_b: np.array) -> float:
     norm_b = np.linalg.norm(vector_b)
     return dot_product / (norm_a * norm_b)
 
+def euclidean_similarity(vector_a: np.array, vector_b: np.array) -> float:
+    """Computes the euclidean distance and returns the negative of the distance
+    to approximate similarity."""
+    return -np.linalg.norm(vector_a - vector_b)
+
 
 class VectorDatabase:
-    def __init__(self, embedding_model: EmbeddingModel = None):
+    def __init__(self, embedding_model: EmbeddingModel = None, 
+    similarity_measure: Callable = cosine_similarity):
         self.vectors = defaultdict(np.array)
         self.embedding_model = embedding_model or EmbeddingModel()
+        self.similarity_measure = similarity_measure
 
     def insert(self, key: str, vector: np.array) -> None:
         self.vectors[key] = vector
@@ -25,10 +32,10 @@ class VectorDatabase:
         self,
         query_vector: np.array,
         k: int,
-        distance_measure: Callable = cosine_similarity,
+        similarity_measure: Callable = cosine_similarity,
     ) -> List[Tuple[str, float]]:
         scores = [
-            (key, distance_measure(query_vector, vector))
+            (key, similarity_measure(query_vector, vector))
             for key, vector in self.vectors.items()
         ]
         return sorted(scores, key=lambda x: x[1], reverse=True)[:k]
@@ -37,11 +44,13 @@ class VectorDatabase:
         self,
         query_text: str,
         k: int,
-        distance_measure: Callable = cosine_similarity,
+        similarity_measure: Callable = None,
         return_as_text: bool = False,
     ) -> List[Tuple[str, float]]:
+        if similarity_measure is None:
+            similarity_measure = self.similarity_measure or cosine_similarity
         query_vector = self.embedding_model.get_embedding(query_text)
-        results = self.search(query_vector, k, distance_measure)
+        results = self.search(query_vector, k, similarity_measure)
         return [result[0] for result in results] if return_as_text else results
 
     def retrieve_from_key(self, key: str) -> np.array:
