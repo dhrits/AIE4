@@ -192,6 +192,7 @@ async def handle_message(message: cl.Message):
         {"query": message.content},
         config=RunnableConfig(callbacks=[cl.LangchainCallbackHandler()]),
     ):
+        chunk = chunk.strip("<|eot_id|>")
         await msg.stream_token(chunk)
 
     await msg.send()
