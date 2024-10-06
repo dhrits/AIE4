@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.10
 RUN useradd -m -u 1000 user
 USER user
 ENV HOME=/home/user \
@@ -6,6 +6,7 @@ ENV HOME=/home/user \
 WORKDIR $HOME/app
 COPY --chown=user . $HOME/app
 COPY ./requirements.txt ~/app/requirements.txt
+COPY ./eu_ai_act.pdf ~/app/eu_ai_act.pdf
 RUN pip install -r requirements.txt
 COPY . .
 CMD ["chainlit", "run", "app.py", "--port", "7860"]
