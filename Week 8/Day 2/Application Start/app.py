@@ -156,7 +156,7 @@ def rename(original_author: str):
     In this case, we're overriding the 'Assistant' author to be 'Paul Graham Essay Bot'.
     """
     rename_dict = {
-        "Assistant" : "Paul Graham Essay Bot"
+        "Chatbot" : "Paul Graham Essay Bot"
     }
     return rename_dict.get(original_author, original_author)
 
@@ -192,7 +192,6 @@ async def handle_message(message: cl.Message):
         {"query": message.content},
         config=RunnableConfig(callbacks=[cl.LangchainCallbackHandler()]),
     ):
-        chunk = chunk.strip("<|eot_id|>")
         await msg.stream_token(chunk)
 
     await msg.send()
