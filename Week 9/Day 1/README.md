@@ -24,3 +24,5 @@ Implement Semantic Caching with Redis (or similar solution), and add tracing thr
 - Make a social media post about your final application and tag @AIMakerspace
 - Share 3 lessons learned
 - Share 3 lessons not learned
+
+eu-ai-bot-local
